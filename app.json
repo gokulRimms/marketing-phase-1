@@ -15,6 +15,9 @@
       "backgroundColor": "#025c4a",
       "translucent": false
     },
+    "splash": {
+      "backgroundColor": "#025c4a"  
+    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
@@ -34,7 +37,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#025c4a"
         }
       ]
     ],

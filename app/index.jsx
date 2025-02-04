@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 export default function App() {
   useEffect(() => {
     setTimeout(() => {
+      // router.replace("/(pages)/policy");
       router.replace("/(auth)/login");
     }, 2000);
   }, []);
