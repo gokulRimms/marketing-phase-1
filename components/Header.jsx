@@ -3,9 +3,11 @@ import { View, Text, TouchableOpacity, SafeAreaView, Image } from "react-native"
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from '../constants/colors';
 
-export default function Header({ title, profile }) {
+export default function Header(props) {
   const router = useRouter();
-
+  const { profile } = props;
+  const title = props[0].options.title || "";
+  // console.log('router from props', props[0].options.title);
   return (
     <SafeAreaView style={{ backgroundColor: colors.primary }}>
       <View
@@ -45,7 +47,22 @@ export default function Header({ title, profile }) {
               source={{
                 uri: "https://picsum.photos/200/300",
               }}
-              style={{ width: 40, height: 40, borderRadius: 20, }}
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                borderWidth: 3,
+                borderColor: "white",
+
+                // Shadow for iOS
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 1,
+                shadowRadius: 4,
+
+                // Elevation for Android
+                elevation: 5,
+              }}
             />
           </TouchableOpacity>
         )}

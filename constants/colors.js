@@ -1,19 +1,49 @@
-//
 export const colors = {
-    primary: '#025c4a',
-    secondary: '#021620',
-    tertiary: '#014f41',
-    error: '#e74c3c',
-    success: '#2ecc71',
-    warning: '#f1c40f',
-    info: '#3498db',
-    typography: '#333333',
-    outline: '#cccccc',
-    background: '#f5f5f5',
-    indicator: '#3498db',
-    white: '#ffffff',
-    gray: '#cccccc',
-    black: '#000000',
-    gradientPrimary: ['#3498db', '#2980b9'],
-    gradientSecondary: ['#e74c3c', '#c0392b']
-}
+    primary: "#025c4a", // Deep green (Main brand color)
+    secondary: "#36BA98", // Almost black (Best for contrast)
+    accent: "#F3E5AB", // Vanilla (Soft & warm highlight)
+    light: "#E3FCEF", // Pale green (Subtle backgrounds)
+    dark: "#01382F", // Darker green (For deep elements)
+    white: "#FFFFFF", // Pure white (Text & contrast)
+    gray: "#8E8E8E", // Neutral tone (For disabled or less emphasis)
+};
+
+export const buttonStyles = {
+    primary: {
+        backgroundColor: colors.primary,
+        color: colors.white,
+    },
+    secondary: {
+        backgroundColor: colors.secondary,
+        color: colors.white,
+    },
+    success: {
+        backgroundColor: colors.light,
+        color: colors.primary,
+    },
+    disabled: {
+        backgroundColor: colors.gray,
+        color: colors.secondary,
+    },
+};
+
+export const backgroundColors = {
+    dark: colors.secondary, // Best for dark themes
+    light: colors.light, // Soft pastel-like background
+    card: colors.dark, // Slightly deeper contrast for components
+};
+
+export const borderColor = {
+    dark: colors.secondary, // Best for dark themes
+    light: colors.light, // Soft pastel-like background
+    card: colors.dark, // Slightly deeper contrast for components
+};
+export const textColors = {
+    primary: colors.white,
+    secondary: colors.secondary,
+    highlight: colors.accent,
+    dark: colors.secondary,
+    light: colors.light,
+    gray: colors.gray,
+    
+};

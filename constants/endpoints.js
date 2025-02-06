@@ -3,8 +3,8 @@ export const API_URL = `${BASE_URL}/api`
 // export const API_VERSION = 'v1'
 
 //Auth ENDPOINT
-export const LOGIN_ENDPOINT = `${API_URL}/auth/login`
-export const LOGOUT_ENDPOINT = `${API_URL}/auth/logout`
+export const LOGIN_ENDPOINT = `${API_URL}/login`
+export const LOGOUT_ENDPOINT = `${API_URL}/logout`
 
 
 // GROUPS

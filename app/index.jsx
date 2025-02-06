@@ -3,13 +3,31 @@ import { View, Text, ImageBackground, ActivityIndicator, StyleSheet } from "reac
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-
+import { get } from '../utility/storage/Actions';
 export default function App() {
   useEffect(() => {
-    setTimeout(() => {
-      // router.replace("/(pages)/policy");
-      router.replace("/(auth)/login");
-    }, 2000);
+    const checkAuthentication = async () => {
+      try {
+        const authenticated = await get("authenticated");
+        const token = await get("access_token");
+        console.log("Authenticated:", authenticated);
+        console.log("Token:", token);
+
+        if (authenticated && token) {
+          console.log("User is authenticated");
+          router.replace("/(tabs)/dashboard");
+        } else {
+          console.log("User is not authenticated");
+          router.replace("/(auth)/login");
+        }
+      } catch (error) {
+        console.error("Error checking authentication:", error);
+        router.replace("/(auth)/login");
+      }
+    };
+
+    setTimeout(checkAuthentication, 1000);
+    
   }, []);
 
   return (

@@ -12,18 +12,72 @@ import { useForm, Controller } from "react-hook-form";
 import { Text } from "@/components/ui/text";
 import { router } from "expo-router";
 import { colors } from "@/constants/colors";
-import {BASE_URL} from "@/constants/endpoints";
+import { LOGIN_ENDPOINT } from "@/constants/endpoints";
+import { set, get, remove } from '../../utility/storage/Actions';
+import axios from 'axios';
+import {
+  useToast,
+  Toast,
+  ToastTitle,
+  ToastDescription,
+} from "@/components/ui/toast"
+
 const LoginPage = () => {
   const {
     control,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
+  setValue("email", "employee1@yopmail.com");
+  setValue("password", "password");
+
+  const toast = useToast()
+  const [toastId, setToastId] = React.useState(0)
+
+
+  const onSubmit = async (data) => {
+    
     console.log("Login data:", data);
-    router.replace("/(blogs)/bloglist"); // Redirect on successful login
+    try {
+      const response = await axios.post(LOGIN_ENDPOINT, data);
+      console.log('Response:', response.data);
+      const { user, access_token } = response.data;
+      console.log('access_token',access_token);
+      await remove('access_token');
+      await remove('authenticated');
+
+      await set('access_token', access_token);
+      await set('authenticated', user);
+      showNewToast()
+      router.replace("/(tabs)/dashboard"); // Redirect on successful login
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+    // router.replace("/(blogs)/bloglist"); // Redirect on successful login
   };
+
+  const showNewToast = () => {
+    const newId = Math.random()
+    setToastId(newId)
+    toast.show({
+      id: newId,
+      placement: "top",
+      duration: 3000,
+      render: ({ id }) => {
+        const uniqueToastId = "toast-" + id
+        return (
+          <Toast nativeID={uniqueToastId} action="muted" variant="outline">
+            <ToastTitle className="font-semibold text-success-500">Success</ToastTitle>
+            <ToastDescription>
+              Login successful
+            </ToastDescription>
+          </Toast>
+        )
+      },
+    })
+  }
 
   return (
     <KeyboardAvoidingView
@@ -54,7 +108,7 @@ const LoginPage = () => {
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email {BASE_URL}</Text>
+              <Text style={styles.label}>Email</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Enter your email"
@@ -147,14 +201,14 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     backgroundColor: "#fff",
     borderRadius: 50,
-    padding: 5,
+    padding: 10,
     elevation: 5, // For shadow effect
   },
   logo: {
-    width: 100,
-    height: 100,
-    padding: 20,
-    borderRadius:10,
+    width: 60,
+    height: 60,
+    padding: 40,
+    borderRadius: 10,
   },
   title: {
     fontSize: 24,

@@ -2,6 +2,8 @@ import { Stack } from "expo-router";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { Tabs } from "expo-router/tabs";
 import Header from "@/components/Header";
+import "../global.css"
+
 export default function RootLayout() {
   return (
     <GluestackUIProvider mode="light">
