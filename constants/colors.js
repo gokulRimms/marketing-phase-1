@@ -6,6 +6,7 @@ export const colors = {
     dark: "#01382F", // Darker green (For deep elements)
     white: "#FFFFFF", // Pure white (Text & contrast)
     gray: "#8E8E8E", // Neutral tone (For disabled or less emphasis)
+    danger : "#fc1943", // Red (For warnings or errors)
 };
 
 export const buttonStyles = {

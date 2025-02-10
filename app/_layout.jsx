@@ -4,7 +4,12 @@ import { Tabs } from "expo-router/tabs";
 import Header from "@/components/Header";
 import "../global.css"
 
+import { useFonts } from "expo-font";
+
+
 export default function RootLayout() {
+ 
+
   return (
     <GluestackUIProvider mode="light">
       <Stack screenOptions={{ headerShown: false, animationEnabled: true, gestureEnabled: true }}>

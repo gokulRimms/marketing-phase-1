@@ -5,4 +5,5 @@ export const icons = {
     contacts: (props)=> <AntDesign name="pluscircleo" size={26} {...props} />,
     history: (props)=> <Feather name="compass" size={26} {...props} />,
     profile: (props)=> <AntDesign name="user" size={26} {...props} />,
+    groups : (props)=> <AntDesign name="team" size={26} {...props} />,
 }

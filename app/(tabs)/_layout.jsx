@@ -23,28 +23,23 @@ const _layout = () => {
                     }}
                 />
                 <Tabs.Screen
-                    name="explore"
+                    name="groups"
                     options={{
-                        title: "Explore"
+                        title: "groups"
                     }}
                 />
 
                 <Tabs.Screen
-                    name="profile"
+                    name="contacts"
                     options={{
-                        title: "Profile"
+                        title: "Contacts"
                     }}
                 />
+
                 <Tabs.Screen
                     name="history"
                     options={{
                         title: "History"
-                    }}
-                />
-                <Tabs.Screen
-                    name="contacts"
-                    options={{
-                        title: "Contacts"
                     }}
                 />
             </Tabs>

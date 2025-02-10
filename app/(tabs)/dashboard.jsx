@@ -2,22 +2,23 @@ import { View, Text, StyleSheet, ScrollView, RefreshControl } from "react-native
 import React, { useState, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { colors, backgroundColors, textColors } from "@/constants/colors";
-import { Ionicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import Loader from "../../components/Loader";
-
+import {_FETCH_DASHBOARD} from '../../utility/models/dashboard'
 export default function DashboardScreen() {
   const { auth } = useAuth(); // Get user object
+  const { user } = auth || {};
 
   const [refreshing, setRefreshing] = useState(false);
-
+  const [dashboardData, setDashboardData] = useState([]);
   // Function to fetch data on refresh
   const fetchData = async () => {
     console.log("pulled over the screen 🔥");
     setRefreshing(true);
     try {
-      // 🔥 Replace this with your API call
-      // const response = await fetch("https://yourapi.com/dashboard");
-      // const data = await response.json();
+      await _FETCH_DASHBOARD().then((response) => {
+        setDashboardData(response.data);
+      })
       console.log("Fetched Data: 🔥",);
       // Update your state here if necessary
     } catch (error) {
@@ -38,15 +39,15 @@ export default function DashboardScreen() {
       {/* Welcome Section */}
       <View style={styles.header}>
         <Text style={styles.welcomeText}>Welcome Back,</Text>
-        <Text style={styles.username}>Employee 1</Text>
+        <Text style={styles.username}>{user?.name}</Text>
       </View>
 
       {/* Widget Section */}
       <View style={styles.widgetContainer}>
-        <DashboardWidget icon="bar-chart-outline" label="Total Earnings" value="₹ 50,000" />
-        <DashboardWidget icon="people-outline" label="Team Members" value="12" />
-        <DashboardWidget icon="briefcase-outline" label="Projects Assigned" value="8" />
-        <DashboardWidget icon="checkmark-done-circle-outline" label="Tasks Completed" value="28" />
+        <DashboardWidget icon="team" label="Groups" value={dashboardData.groups} />
+        <DashboardWidget icon="contacts" label="Contacts" value={dashboardData.contacts} />
+        <DashboardWidget icon="message1" label="Sent" value={dashboardData.sent} />
+        <DashboardWidget icon="clockcircleo" label="Todays Sent" value={dashboardData.todays_sent} />
       </View>
 
       {/* Recent Activity Section */}
@@ -65,7 +66,7 @@ export default function DashboardScreen() {
 // Reusable Widget Component
 const DashboardWidget = ({ icon, label, value }) => (
   <View style={styles.widget}>
-    <Ionicons name={icon} size={30} color={colors.primary} />
+    <AntDesign name={icon} size={30} color={colors.primary} />
     <Text style={styles.widgetLabel}>{label}</Text>
     <Text style={styles.widgetValue}>{value}</Text>
   </View>

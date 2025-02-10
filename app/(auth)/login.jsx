@@ -12,7 +12,7 @@ import { useForm, Controller } from "react-hook-form";
 import { Text } from "@/components/ui/text";
 import { router } from "expo-router";
 import { colors } from "@/constants/colors";
-import { LOGIN_ENDPOINT } from "@/constants/endpoints";
+import { _LOGIN } from "../../utility/models/auth";
 import { set, get, remove } from '../../utility/storage/Actions';
 import axios from 'axios';
 import {
@@ -41,7 +41,7 @@ const LoginPage = () => {
     
     console.log("Login data:", data);
     try {
-      const response = await axios.post(LOGIN_ENDPOINT, data);
+      const response = await _LOGIN(data); //await axios.post(LOGIN_ENDPOINT, data);
       console.log('Response:', response.data);
       const { user, access_token } = response.data;
       console.log('access_token',access_token);

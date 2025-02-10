@@ -16,7 +16,7 @@
       "translucent": false
     },
     "splash": {
-      "backgroundColor": "#025c4a"  
+      "backgroundColor": "#025c4a"
     },
     "android": {
       "adaptiveIcon": {
@@ -39,7 +39,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#025c4a"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

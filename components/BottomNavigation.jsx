@@ -17,7 +17,7 @@ const BottomNavigation = ({ state, descriptors, navigation }) => {
               ? options.title
               : route.name;
 
-        const allowedRoutes = ['dashboard', 'contacts', 'history', 'profile'];
+        const allowedRoutes = ['dashboard', 'contacts', 'history', 'groups'];
 
         if (!allowedRoutes.includes(route.name)) {
           return null;
@@ -90,6 +90,7 @@ const styles = StyleSheet.create({
   tabbar: {
     position: 'absolute',
     bottom: 25,
+    elevation :4,
     flexDirection: 'row',
     // width: '90%',
     justifyContent: 'space-between',
