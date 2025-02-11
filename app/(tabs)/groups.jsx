@@ -3,6 +3,9 @@ import { View, Text, TouchableOpacity, FlatList, Alert, ActivityIndicator, Style
 import { colors } from "../../constants/colors";
 import { Feather } from '@expo/vector-icons';
 import { _FETCH_GROUPS } from "../../utility/models/groups"; // API call for groups
+import { FIRE_TOAST } from '../../utility/helpers/toaster';
+import { useToast } from "@/components/ui/toast";
+import * as SMS from 'expo-sms';
 
 const GroupsScreen = () => {
   const [groups, setGroups] = useState([]);
@@ -10,6 +13,9 @@ const GroupsScreen = () => {
   const [searchText, setSearchText] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // toast
+  const toast = useToast(); // Get toast instance
 
   useEffect(() => {
     fetchGroupData();
@@ -35,7 +41,8 @@ const GroupsScreen = () => {
       setGroups(response.data);
       setFilteredGroups(response.data); // Initially, display all groups
     } catch (error) {
-      Alert.alert("Error", "Failed to fetch groups");
+      console.log("Error fetching groups:", error);
+      FIRE_TOAST(toast, "error", "solid", "Error!", "Failed to fetch groups.");
     } finally {
       setLoading(false);
     }
@@ -47,56 +54,108 @@ const GroupsScreen = () => {
     setRefreshing(false);
   };
 
-  const sendMessage = (groupId) => {
-    // Placeholder function to handle send action
-    Alert.alert("Send", `Sending message to group with ID: ${groupId}`);
+  const sendMessage = async (groupId) => {
+    // Collect all phone numbers into an array
+    // const phoneNumbers = contacts.map((contact) => contact.phone);
+    const isAvailable = await SMS.isAvailableAsync();
+    console.log('isAvailable', isAvailable);
+    // if (isAvailable) {
+    //   //// do your SMS stuff here
+    // } else {
+    //   // misfortune... there's no SMS available on this device
+    // }
+    const { result } = await SMS.sendSMSAsync(['8006584349', '7827258049', '9027956097'], 'Hello TEST Message');
+    console.log('result', result);
+    if (result === 'sent' || result === 'unknown') {
+      console.log('api called');
+      // Send history only if SMS is sent or unknown
+      try {
+        FIRE_TOAST(toast, "success", "solid", "Success!", "History Created...");
+
+        // Alert.alert('History Created...');
+        // const historySent = await axiosInstance.post(`/messages/${editMessage.id}/history`, {
+        //   message_id: editMessage.id,
+        //   group_id: selectedGroup,
+        //   contacts: contacts.map((contact) => contact.id), // Ensure you are sending contact IDs correctly
+        // });
+        // console.log('historySent', historySent.data);
+        // if (historySent.data.status) {
+
+        //   Alert.alert('Message Sent successfully');
+        // }
+      } catch (error) {
+        console.error('Error sending history:', error);
+        FIRE_TOAST(toast, "error", "solid", "Info!", "Failed to send the message");
+      }
+    } else {
+      FIRE_TOAST(toast, "error", "solid", "Info!", "SMS not sent. Result");
+      console.log('SMS not sent. Result:', result);
+    }
+
   };
+
+
 
   const renderGroupItem = ({ item }) => {
     // Extract employee names as a comma-separated list
     const employeeNames = item.assigned_users.map((user) => user.name).join(", ");
-    
+
     return (
       <View style={styles.groupCard}>
         <View style={styles.groupHeader}>
           <Text style={styles.groupName}>{item.name}</Text>
           <Text style={styles.groupDescription}>{item.description}</Text>
         </View>
-  
+
         <View style={styles.templateInfo}>
           <Text style={styles.templateTitle}>Template: {item.template_name}</Text>
           <Text style={styles.templateMessage}>{item.template_message}</Text>
         </View>
-  
+
         <View style={styles.assignedUserInfo}>
           <Text style={styles.assignedUserNames}>{employeeNames}</Text>
         </View>
-  
+
         <View style={styles.historyContactsBox}>
           <View style={styles.historyBox}>
-            <Text style={styles.historyCount}>{item.total_histories} Sent</Text>
+            <Text style={styles.historyCount}>Total {item.total_histories} Sent</Text>
           </View>
-          <View style={styles.contactsBox}>
+          <View style={[styles.historyBox, { backgroundColor: colors.primary }]}>
             <Text style={styles.totalContacts}>{item.total_contacts} Contacts</Text>
           </View>
         </View>
-  
+        <View style={styles.historyContactsBox}>
+          <View style={[styles.historyBox, { backgroundColor: colors.primary }]}>
+            <Text style={styles.historyCount}>Sent {item.total_sent_todays} Today</Text>
+          </View>
+          <View style={styles.contactsBox}>
+            <Text style={styles.totalContacts}>{item.balance} Quota Left</Text>
+          </View>
+        </View>
+
         <View style={{ alignItems: 'center' }}>
-          {!item.disabled && (
-            <TouchableOpacity
-              style={[styles.sendButton, { backgroundColor: colors.primary }]}
-              onPress={() => sendMessage(item.id)}
-            >
-              <Feather name="send" size={20} color={colors.white} />
-              <Text style={[styles.sendButtonText, { color: colors.white }]}>Send Message</Text>
-            </TouchableOpacity>
-          )}
+
+          <TouchableOpacity
+            style={[styles.sendButton, { backgroundColor: item.disabled ? colors.gray : colors.primary, }]}
+            onPress={() => {
+              if (item.disabled) {
+                FIRE_TOAST(toast, "error", "solid", "Notice!", "You've consumed all your messages for today.");
+                return
+              }
+              sendMessage(item.id)
+            }}
+          // disabled={item.disabled}
+          >
+            <Feather name="send" size={20} color={colors.white} />
+            <Text style={[styles.sendButtonText, { color: colors.white }]}>Send Message</Text>
+          </TouchableOpacity>
+
         </View>
       </View>
     );
   };
-  
-  
+
+
 
   return (
     <View style={styles.container}>
@@ -132,7 +191,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderColor: colors.gray,
     margin: 10,
-    borderWidth: 1,
+    borderBottomWidth: 1,
     borderRadius: 2,
     paddingLeft: 10,
     marginBottom: 15,
@@ -142,8 +201,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 15,
     margin: 10,
-    borderWidth: 1,
-    borderColor: colors.gray,
+    // Bottom: 1,
+    // borderColor: colors.gray,
     borderRadius: 2,
     elevation: 5,
     backgroundColor: colors.white,

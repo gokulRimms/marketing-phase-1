@@ -17,7 +17,7 @@ const BottomNavigation = ({ state, descriptors, navigation }) => {
               ? options.title
               : route.name;
 
-        const allowedRoutes = ['dashboard', 'contacts', 'history', 'groups'];
+        const allowedRoutes = ['dashboard', 'contacts', 'history', 'groups', 'leads'];
 
         if (!allowedRoutes.includes(route.name)) {
           return null;

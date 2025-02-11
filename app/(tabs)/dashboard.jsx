@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, RefreshControl } from "react-native";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { colors, backgroundColors, textColors } from "@/constants/colors";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
@@ -12,6 +12,12 @@ export default function DashboardScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [dashboardData, setDashboardData] = useState([]);
   // Function to fetch data on refresh
+
+  
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const fetchData = async () => {
     console.log("pulled over the screen 🔥");
     setRefreshing(true);
@@ -42,12 +48,14 @@ export default function DashboardScreen() {
         <Text style={styles.username}>{user?.name}</Text>
       </View>
 
+      
       {/* Widget Section */}
       <View style={styles.widgetContainer}>
         <DashboardWidget icon="team" label="Groups" value={dashboardData.groups} />
         <DashboardWidget icon="contacts" label="Contacts" value={dashboardData.contacts} />
         <DashboardWidget icon="message1" label="Sent" value={dashboardData.sent} />
-        <DashboardWidget icon="clockcircleo" label="Todays Sent" value={dashboardData.todays_sent} />
+        <DashboardWidget icon="clockcircleo" label="Todays Sent" value={`${dashboardData.todays_sent} / 80`} />
+       
       </View>
 
       {/* Recent Activity Section */}

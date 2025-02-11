@@ -14,15 +14,12 @@ import { router } from "expo-router";
 import { colors } from "@/constants/colors";
 import { _LOGIN } from "../../utility/models/auth";
 import { set, get, remove } from '../../utility/storage/Actions';
-import axios from 'axios';
-import {
-  useToast,
-  Toast,
-  ToastTitle,
-  ToastDescription,
-} from "@/components/ui/toast"
-
+import { FIRE_TOAST } from "../../utility/helpers/toaster";
+import { useToast } from "@/components/ui/toast";
 const LoginPage = () => {
+
+  const toast = useToast();
+
   const {
     control,
     setValue,
@@ -33,26 +30,26 @@ const LoginPage = () => {
   setValue("email", "employee1@yopmail.com");
   setValue("password", "password");
 
-  const toast = useToast()
-  const [toastId, setToastId] = React.useState(0)
 
 
   const onSubmit = async (data) => {
-    
+
     console.log("Login data:", data);
     try {
       const response = await _LOGIN(data); //await axios.post(LOGIN_ENDPOINT, data);
       console.log('Response:', response.data);
       const { user, access_token } = response.data;
-      console.log('access_token',access_token);
+      console.log('access_token', access_token);
       await remove('access_token');
       await remove('authenticated');
 
       await set('access_token', access_token);
       await set('authenticated', user);
-      showNewToast()
+      FIRE_TOAST(toast, "success", "solid", "Success", "Successfully logged in.");
+
       router.replace("/(tabs)/dashboard"); // Redirect on successful login
     } catch (error) {
+      FIRE_TOAST(toast, "error", "solid", "Failed", "Login failed try again");
       console.error('Error fetching data:', error);
     }
     // router.replace("/(blogs)/bloglist"); // Redirect on successful login

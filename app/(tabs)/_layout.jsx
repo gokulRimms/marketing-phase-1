@@ -25,7 +25,7 @@ const _layout = () => {
                 <Tabs.Screen
                     name="groups"
                     options={{
-                        title: "groups"
+                        title: "Groups"
                     }}
                 />
 
