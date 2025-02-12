@@ -37,22 +37,22 @@ const LoginPage = () => {
     console.log("Login data:", data);
     try {
       const response = await _LOGIN(data); //await axios.post(LOGIN_ENDPOINT, data);
-      console.log('Response:', response.data);
-      const { user, access_token } = response.data;
-      console.log('access_token', access_token);
-      await remove('access_token');
-      await remove('authenticated');
+      const { user, access_token } = response.data || {};
+      if (user && access_token) {
+        console.log('access_token', access_token);
+        await remove('access_token');
+        await remove('authenticated');
 
-      await set('access_token', access_token);
-      await set('authenticated', user);
-      FIRE_TOAST(toast, "success", "solid", "Success", "Successfully logged in.");
+        await set('access_token', access_token);
+        await set('authenticated', user);
+        FIRE_TOAST(toast, "success", "solid", "Success", "Successfully logged in.");
 
-      router.replace("/(tabs)/dashboard"); // Redirect on successful login
+        router.replace("/(tabs)/dashboard"); // Redirect on successful login
+      }
     } catch (error) {
-      FIRE_TOAST(toast, "error", "solid", "Failed", "Login failed try again");
-      console.error('Error fetching data:', error);
+      FIRE_TOAST(toast, "error", "solid", "Failed", error?.response?.data?.message || "Failed to login.");
+      console.log("Error Response:", error.response.data.message);
     }
-    // router.replace("/(blogs)/bloglist"); // Redirect on successful login
   };
 
   const showNewToast = () => {

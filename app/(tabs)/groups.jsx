@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, FlatList, Alert, ActivityIndicator, StyleSheet, RefreshControl, Image, TextInput } from "react-native";
 import { colors } from "../../constants/colors";
 import { Feather } from '@expo/vector-icons';
-import { _FETCH_GROUPS } from "../../utility/models/groups"; // API call for groups
+import { _FETCH_GROUPS, _FETCH_GROUP_CONTACTS } from "../../utility/models/groups"; // API call for groups
+import { _CREATE_HISTORY } from '../../utility/models/history';
 import { FIRE_TOAST } from '../../utility/helpers/toaster';
 import { useToast } from "@/components/ui/toast";
 import * as SMS from 'expo-sms';
@@ -14,6 +15,8 @@ const GroupsScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  //
+  const [sendingContacts, setSendingContacts] = useState([]);
   // toast
   const toast = useToast(); // Get toast instance
 
@@ -54,23 +57,44 @@ const GroupsScreen = () => {
     setRefreshing(false);
   };
 
-  const sendMessage = async (groupId) => {
-    // Collect all phone numbers into an array
-    // const phoneNumbers = contacts.map((contact) => contact.phone);
+  const sendMessage = async (groupId, balance, template_message) => {
+
+    const request = await _FETCH_GROUP_CONTACTS(groupId, balance);
+
+    const { contacts } = request.data || {};
+    // console.log('contacts', contacts.length);
+    setSendingContacts(contacts);
+
+    const formattedNumbers = contacts.map((contact) => contact.phone);
+
+
+    // return;
     const isAvailable = await SMS.isAvailableAsync();
     console.log('isAvailable', isAvailable);
+    console.log('formattedNumbers', formattedNumbers);
     // if (isAvailable) {
     //   //// do your SMS stuff here
     // } else {
     //   // misfortune... there's no SMS available on this device
     // }
-    const { result } = await SMS.sendSMSAsync(['8006584349', '7827258049', '9027956097'], 'Hello TEST Message');
+    //['8006584349', '7827258049', '9027956097']
+    const { result } = await SMS.sendSMSAsync(formattedNumbers, template_message);
     console.log('result', result);
     if (result === 'sent' || result === 'unknown') {
       console.log('api called');
       // Send history only if SMS is sent or unknown
       try {
-        FIRE_TOAST(toast, "success", "solid", "Success!", "History Created...");
+
+        const createHistory = await _CREATE_HISTORY(groupId, contacts.map((contact) => contact.id)).then((response) => {
+          FIRE_TOAST(toast, "success", "solid", "Success!", "History Created...");
+          fetchGroupData();
+          return
+        }).catch((error) => {
+          console.log('error', error);
+          FIRE_TOAST(toast, "error", "solid", "Error!", "Failed to create history.");
+          return
+        });
+
 
         // Alert.alert('History Created...');
         // const historySent = await axiosInstance.post(`/messages/${editMessage.id}/history`, {
@@ -142,7 +166,7 @@ const GroupsScreen = () => {
                 FIRE_TOAST(toast, "error", "solid", "Notice!", "You've consumed all your messages for today.");
                 return
               }
-              sendMessage(item.id)
+              sendMessage(item.id, item.balance, item.template_message)
             }}
           // disabled={item.disabled}
           >

@@ -28,13 +28,17 @@ HIT_SERVER.interceptors.request.use(
 HIT_SERVER.interceptors.response.use(
     (response) => response, // Return response if successful
     async (error) => {
+        const requestUrl = error.config.url; // Get request URL
+        if (requestUrl.includes("login")) {
+            return await Promise.reject(error); // Don't redirect, just return the error
+        }
         if (error.response && error.response.status === 401) {
             await remove("access_token");
             await remove("authenticated");
-            console.warn("Session expired. Please log in again.");
+            console.warn("Session expired. Please log in again.", router);
             router.replace("/(auth)/login"); // Redirect to login page
         }
-        return Promise.reject(error);
+        return await Promise.reject(error);
     }
 );
 
