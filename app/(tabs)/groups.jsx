@@ -7,6 +7,7 @@ import { _CREATE_HISTORY } from '../../utility/models/history';
 import { FIRE_TOAST } from '../../utility/helpers/toaster';
 import { useToast } from "@/components/ui/toast";
 import * as SMS from 'expo-sms';
+import Loader from "../../components/Loader";
 
 const GroupsScreen = () => {
   const [groups, setGroups] = useState([]);
@@ -58,9 +59,9 @@ const GroupsScreen = () => {
   };
 
   const sendMessage = async (groupId, balance, template_message) => {
-
+    setLoading(true);
     const request = await _FETCH_GROUP_CONTACTS(groupId, balance);
-
+    setLoading(false);
     const { contacts } = request.data || {};
     // console.log('contacts', contacts.length);
     setSendingContacts(contacts);
@@ -145,7 +146,7 @@ const GroupsScreen = () => {
             <Text style={styles.historyCount}>Total {item.total_histories} Sent</Text>
           </View>
           <View style={[styles.historyBox, { backgroundColor: colors.primary }]}>
-            <Text style={styles.totalContacts}>{item.total_contacts} Contacts</Text>
+            <Text style={styles.totalContacts}>{item.total_contacts} / {item.contact_without_history} Contacts</Text>
           </View>
         </View>
         <View style={styles.historyContactsBox}>
@@ -162,13 +163,20 @@ const GroupsScreen = () => {
           <TouchableOpacity
             style={[styles.sendButton, { backgroundColor: item.disabled ? colors.gray : colors.primary, }]}
             onPress={() => {
+              setLoading(true);
               if (item.disabled) {
                 FIRE_TOAST(toast, "error", "solid", "Notice!", "You've consumed all your messages for today.");
-                return
+            
               }
-              sendMessage(item.id, item.balance, item.template_message)
+
+              if(item.contact_without_history > 0) {
+                sendMessage(item.id, item.balance, item.template_message)
+              }
+              FIRE_TOAST(toast, "warning", "solid", "Warning!", "All contacts have been sent.");
+              setLoading(false);
+              return
             }}
-          // disabled={item.disabled}
+          // disabled={true}
           >
             <Feather name="send" size={20} color={colors.white} />
             <Text style={[styles.sendButtonText, { color: colors.white }]}>Send Message</Text>
@@ -192,7 +200,7 @@ const GroupsScreen = () => {
       />
 
       {loading ? (
-        <ActivityIndicator size="large" color={colors.primary} />
+        <Loader size="large" color={colors.primary} />
       ) : (
         <FlatList
           data={filteredGroups}

@@ -3,6 +3,7 @@ import { View, Text, TextInput, FlatList, Button, Alert, ActivityIndicator, Styl
 import { colors } from "../../constants/colors";
 import { _FETCH_LEADS, _ADD_LEAD } from "../../utility/models/leads"; // API calls
 import { _FETCH_GROUPS } from '../../utility/models/groups';
+import {TIME_AGO} from '../../utility/helpers/Carbon';
 import {
     Select,
     SelectTrigger,
@@ -17,8 +18,12 @@ import {
 } from "@/components/ui/select"
 import { ChevronDownIcon } from "@/components/ui/icon"
 import { TouchableOpacity } from "react-native";
+import { FIRE_TOAST } from "../../utility/helpers/toaster";
+import { useToast } from "@/components/ui/toast";
 
 const LeadsScreen = () => {
+    const toast = useToast(); // Get toast instance
+
     const [leads, setLeads] = useState([]);
     const [filteredLeads, setFilteredLeads] = useState([]);
     const [groupName, setGroupName] = useState("");
@@ -104,26 +109,23 @@ const LeadsScreen = () => {
     };
 
     const addLead = async () => {
-        if (!groupName || !contact || !description) {
+        if (!contact || !description) {
             Alert.alert("Error", "Please fill all fields");
             return;
         }
 
         try {
             setLoading(true);
-            const newLead = { group_name: groupName, contact, description };
-            const response = await _ADD_LEAD(newLead);
+            const newLead = { contact, description };
+            const response = await _ADD_LEAD(newLead).then((response) => {
+                console.log("Added Lead:", response);
+                fetchLeadsData(1);
+                FIRE_TOAST(toast, "success", "solid", "Success", response.message || "Lead added successfully.");
+            }).catch((error) => {
+                console.log("Error adding lead:", error);
+                FIRE_TOAST(toast, "error", "solid", "Error", error?.response?.data?.message || "Failed to add lead.");
+            });
 
-            if (response.success) {
-                Alert.alert("Success", "Lead added successfully!");
-                setLeads([response.data, ...leads]);
-                setFilteredLeads([response.data, ...filteredLeads]);
-                setGroupName("");
-                setContact("");
-                setDescription("");
-            } else {
-                Alert.alert("Error", response.message);
-            }
         } catch (error) {
             Alert.alert("Error", "Failed to add lead");
         } finally {
@@ -136,13 +138,14 @@ const LeadsScreen = () => {
             <Text style={styles.leadTitle}>Group: {item.group_name}</Text>
             <Text style={styles.leadContact}>Contact: {item.contact}</Text>
             <Text style={styles.leadDescription}>Description: {item.description}</Text>
+            <Text style={styles.leadDate}>Date: {TIME_AGO(item.created_at)}</Text>
         </View>
     );
     return (
         <View style={styles.container}>
             {/* Form */}
-            <TextInput style={styles.input} placeholder="Contact" value={contact} onChangeText={setContact} />
-            <View style={{ marginBottom: 10 }}>
+            <TextInput style={styles.input} placeholder="Enter Contact Number" value={contact} onChangeText={setContact} />
+            {/* <View style={{ marginBottom: 10 }}>
                 <Select value={groupName} onValueChange={setGroupName} variant="solid" size="xl">
                     <SelectTrigger className='h-12 border-0' style={{ borderBottomWidth: 1, borderColor: colors.gray }}>
                         <SelectInput className='h-12 text-lg' placeholder="Select Group Name" />
@@ -162,7 +165,7 @@ const LeadsScreen = () => {
                         </SelectContent>
                     </SelectPortal>
                 </Select>
-            </View>
+            </View> */}
 
             <TextInput style={styles.input} placeholder="Description" value={description} onChangeText={setDescription} />
 

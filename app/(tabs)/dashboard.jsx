@@ -47,25 +47,30 @@ export default function DashboardScreen() {
         <Text style={styles.welcomeText}>Welcome Back,</Text>
         <Text style={styles.username}>{user?.name}</Text>
       </View>
-
+      {/* <View style={[styles.activityContainer, { marginBottom: 20}]}>
+        <ActivityItem icon="logo-capacitor" label="80" time="Total Capacity" />
+        <ActivityItem icon="chatbubble-ellipses-outline" label={dashboardData.todays_sent + " Messages"} time="Sent Today" />
+      </View> */}
       
       {/* Widget Section */}
       <View style={styles.widgetContainer}>
+      <DashboardWidget icon="doubleright" label="Total Capacity" value="80" />
+      <DashboardWidget icon="wechat" label="Capacity Left" value={80-dashboardData.todays_sent} />
+
         <DashboardWidget icon="team" label="Groups" value={dashboardData.groups} />
         <DashboardWidget icon="contacts" label="Contacts" value={dashboardData.contacts} />
-        <DashboardWidget icon="message1" label="Sent" value={dashboardData.sent} />
-        <DashboardWidget icon="clockcircleo" label="Todays Sent" value={`${dashboardData.todays_sent} / 80`} />
-       
+        <DashboardWidget icon="message1" label="Total Sent" value={dashboardData.sent} />
+        <DashboardWidget icon="clockcircleo" label="Todays Sent" value={`${dashboardData.todays_sent}`} />
+        <DashboardWidget icon="book" label="Total Leads" value={`${dashboardData.total_leads}`} />
+        <DashboardWidget icon="save" label="Todays Leads" value={`${dashboardData.today_leads}`} />
+
       </View>
 
       {/* Recent Activity Section */}
       <View style={styles.activityContainer}>
-        <Text style={styles.sectionTitle}>Recent Activity</Text>
-        <ActivityItem icon="document-text-outline" label="Submitted Report" time="2 hours ago" />
-        <ActivityItem icon="chatbubble-ellipses-outline" label="New Message from HR" time="1 day ago" />
-        <ActivityItem icon="calendar-outline" label="Upcoming Meeting" time="Tomorrow 10:00 AM" />
-        <ActivityItem icon="calendar-outline" label="Upcoming Meeting" time="Tomorrow 10:00 AM" />
-        <ActivityItem icon="calendar-outline" label="Upcoming Meeting" time="Tomorrow 10:00 AM" />
+        {/* <Text style={styles.sectionTitle}>Recent Activity</Text> */}
+        {/* <ActivityItem icon="bag-check-outline" label={dashboardData.total_leads} time="Total Leads" />
+        <ActivityItem icon="bag-add-outline" label={dashboardData.today_leads} time="New Leads" /> */}
       </View>
     </ScrollView>
    
