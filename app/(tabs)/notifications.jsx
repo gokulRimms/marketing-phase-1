@@ -105,7 +105,8 @@ const NotificationsScreen = () => {
           renderItem={({ item }) => (
             <View style={styles.notificationCard}>
               <View style={styles.notificationContent}>
-                <Text style={styles.messageText}>{item?.data?.message}</Text>
+              <Text style={{ fontSize: 16, fontWeight: "bold", marginBottom: 5,color: colors.secondary }}>{item?.data?.title}</Text>
+                <Text style={styles.messageText}>{item?.data?.message || item.data.body}</Text>
                 <Text style={styles.timestampText}>{TIME_AGO(item?.created_at)}</Text>
               </View>
 
@@ -184,7 +185,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightGray,
   },
   notificationContent: { flex: 1 },
-  messageText: { fontSize: 14, color: colors.gray, fontWeight: "bold" },
+  messageText: { fontSize: 12, color: colors.gray, fontWeight: "bold" },
   timestampText: { fontSize: 10, color: colors.secondary, marginTop: 5 },
   actionButtons: { flexDirection: "row" },
   actionButton: {

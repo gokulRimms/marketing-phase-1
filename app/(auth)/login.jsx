@@ -51,7 +51,7 @@ const LoginPage = () => {
       }
     } catch (error) {
       FIRE_TOAST(toast, "error", "solid", "Failed", error?.response?.data?.message || "Failed to login.");
-      console.log("Error Response:", error.response.data.message);
+      console.log("Error Response:", error.response);
     }
   };
 

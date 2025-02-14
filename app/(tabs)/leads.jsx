@@ -138,7 +138,7 @@ const LeadsScreen = () => {
             <Text style={styles.leadTitle}>Group: {item.group_name}</Text>
             <Text style={styles.leadContact}>Contact: {item.contact}</Text>
             <Text style={styles.leadDescription}>Description: {item.description}</Text>
-            <Text style={styles.leadDate}>Date: {TIME_AGO(item.created_at)}</Text>
+            <Text style={styles.leadDate}>{TIME_AGO(item.created_at)}</Text>
         </View>
     );
     return (
@@ -229,8 +229,8 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 15,
         margin: 10,
-        borderWidth: 1,
-        borderColor: colors.gray,
+        // borderWidth: 1,
+        // borderColor: colors.gray,
         borderRadius: 2,
         elevation: 5,
         backgroundColor: colors.white,
