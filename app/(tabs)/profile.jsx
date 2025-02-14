@@ -15,7 +15,7 @@ export default function ProfileScreen() {
   }
 
   const { user } = auth;
-
+  console.log('user.avatar', user.avatar);
   const handleLogout = async () => {
     await logout(); // Call logout function
     router.replace("/(auth)/login"); // Redirect to login

@@ -73,6 +73,12 @@ const GroupsScreen = () => {
     const isAvailable = await SMS.isAvailableAsync();
     console.log('isAvailable', isAvailable);
     console.log('formattedNumbers', formattedNumbers);
+
+    if(formattedNumbers.length === 0) {
+      FIRE_TOAST(toast, "error", "solid", "Error!", "No contacts to send message.");
+      return
+    }
+
     // if (isAvailable) {
     //   //// do your SMS stuff here
     // } else {
@@ -89,6 +95,7 @@ const GroupsScreen = () => {
         const createHistory = await _CREATE_HISTORY(groupId, contacts.map((contact) => contact.id)).then((response) => {
           FIRE_TOAST(toast, "success", "solid", "Success!", "History Created...");
           fetchGroupData();
+          setSendingContacts([]);
           return
         }).catch((error) => {
           console.log('error', error);
@@ -166,7 +173,8 @@ const GroupsScreen = () => {
               setLoading(true);
               if (item.disabled) {
                 FIRE_TOAST(toast, "error", "solid", "Notice!", "You've consumed all your messages for today.");
-            
+                setLoading(false);
+                return
               }
 
               if(item.contact_without_history > 0) {

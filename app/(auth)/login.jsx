@@ -157,14 +157,6 @@ const LoginPage = () => {
         <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
-
-        {/* Redirect to Blogs */}
-        {/* <TouchableOpacity
-          onPress={() => router.replace("/(blogs)/bloglist")}
-          style={styles.link}
-        >
-          <Text style={styles.linkText}>Go to Blogs</Text>
-        </TouchableOpacity> */}
       </View>
     </KeyboardAvoidingView>
   );

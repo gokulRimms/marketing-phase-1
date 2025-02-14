@@ -119,6 +119,8 @@ const LeadsScreen = () => {
             const newLead = { contact, description };
             const response = await _ADD_LEAD(newLead).then((response) => {
                 console.log("Added Lead:", response);
+                setContact("");
+                setDescription("");
                 fetchLeadsData(1);
                 FIRE_TOAST(toast, "success", "solid", "Success", response.message || "Lead added successfully.");
             }).catch((error) => {
