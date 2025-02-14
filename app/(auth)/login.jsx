@@ -50,7 +50,7 @@ const LoginPage = () => {
         router.replace("/(tabs)/dashboard"); // Redirect on successful login
       }
     } catch (error) {
-      FIRE_TOAST(toast, "error", "solid", "Failed", error?.response?.data?.message || "Failed to login.");
+      FIRE_TOAST(toast, "error", "solid", "Failed", error?.response?.data || "Failed to login.");
       console.log("Error Response:", error.response);
     }
   };
