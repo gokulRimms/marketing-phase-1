@@ -1,4 +1,4 @@
-package com.gokulsinghgariyaa.marketingphase1app
+package com.gokulsinghgariyaa.rimsmarketing
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

@@ -21,7 +21,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   }
 }
 
-rootProject.name = 'marketing-phase-1-app'
+rootProject.name = 'rims-marketing'
 
 dependencyResolutionManagement {
   versionCatalogs {

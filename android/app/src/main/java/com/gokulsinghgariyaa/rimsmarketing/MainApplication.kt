@@ -1,4 +1,4 @@
-package com.gokulsinghgariyaa.marketingphase1app
+package com.gokulsinghgariyaa.rimsmarketing
 
 import android.app.Application
 import android.content.res.Configuration

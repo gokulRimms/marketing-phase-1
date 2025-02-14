@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "marketing-phase-1-app",
-    "slug": "marketing-phase-1-app",
+    "name": "rims-marketing",
+    "slug": "rims-marketing",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "marketingphase1app",
+    "scheme": "rims-marketing",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.gokulsinghgariyaa.marketingphase1app"
+      "bundleIdentifier": "com.gokulsinghgariyaa.rimsmarketing"
     },
     "androidStatusBar": {
       "backgroundColor": "#025c4a",
@@ -24,7 +24,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.gokulsinghgariyaa.marketingphase1app"
+      "package": "com.gokulsinghgariyaa.rimsmarketing"
     },
     "web": {
       "bundler": "metro",

@@ -7,7 +7,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>marketing-phase-1-app</string>
+    <string>rims-marketing</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -28,13 +28,13 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>rims-marketing</string>
-          <string>com.gokulsinghgariyaa.marketingphase1app</string>
+          <string>com.gokulsinghgariyaa.rimsmarketing</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>exp+marketing-phase-1-app</string>
+          <string>exp+rims-marketing</string>
         </array>
       </dict>
     </array>
