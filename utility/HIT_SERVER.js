@@ -12,6 +12,7 @@ const HIT_SERVER = axios.create({
     },
 });
 
+console.log('API_URL', API_URL);
 // Request Interceptor: Attach Token
 HIT_SERVER.interceptors.request.use(
     async (config) => {

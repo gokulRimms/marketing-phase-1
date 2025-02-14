@@ -4,6 +4,6 @@ export const _LOGIN = (data) => {
         const request = HIT_SERVER.post('login', data);
         return request;
     } catch (error) {
-        console.log('error : ', error);
+        throw error;
     }
 }

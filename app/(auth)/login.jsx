@@ -27,8 +27,8 @@ const LoginPage = () => {
     formState: { errors },
   } = useForm();
 
-  setValue("email", "employee1@yopmail.com");
-  setValue("password", "password");
+  // setValue("email", "employee1@yopmail.com");
+  // setValue("password", "password");
 
 
 
@@ -50,8 +50,8 @@ const LoginPage = () => {
         router.replace("/(tabs)/dashboard"); // Redirect on successful login
       }
     } catch (error) {
-      FIRE_TOAST(toast, "error", "solid", "Failed", error?.response?.data || "Failed to login.");
-      console.log("Error Response:", error.response);
+      FIRE_TOAST(toast, "error", "solid", "Failed", error?.response?.data?.message || "Failed to login.");
+      console.log("Error Response:", error.response.data.message);
     }
   };
 
