@@ -142,12 +142,17 @@ const LeadsScreen = () => {
             setLoading(true);
             const newLead = { contact, description, group_id: groupName };
             const response = await _ADD_LEAD(newLead).then((response) => {
-                console.log("Added Lead:", response);
+                console.log("Added Lead:", response.message);
+                if(response.status){
+                    FIRE_TOAST(toast, "success", "solid", "Success", response.message || "Lead added successfully.");
+                }else{
+                    FIRE_TOAST(toast, "warning", "solid", "Success", response.message || "Something went wrong..    ");
+                }
                 setContact("");
                 setDescription("");
-                setGroupName('')
+                setGroupName("")
+                setGroupByPhone([])
                 fetchLeadsData(1);
-                FIRE_TOAST(toast, "success", "solid", "Success", response.message || "Lead added successfully.");
             }).catch((error) => {
                 console.log("Error adding lead:", error);
                 FIRE_TOAST(toast, "error", "solid", "Error", error?.response?.data?.message || "Failed to add lead.");
@@ -314,15 +319,28 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: "#333",
     },
-    leadStatus: (status) => ({
-        fontSize: 14,
-        fontWeight: "600",
-        color: status === "active" ? "#28A745" : "#DC3545",
-        backgroundColor: status === "active" ? "#E9F7EF" : "#F8D7DA",
-        paddingVertical: 3,
-        paddingHorizontal: 10,
-        borderRadius: 15,
-    }),
+    leadStatus: (status) => {
+        let statusColors = {
+            logged: { text: "#0D6EFD", background: "#E7F1FF" },      // Blue
+            pending: { text: "#FFC107", background: "#FFF3CD" },     // Yellow
+            inprogress: { text: "#17A2B8", background: "#D1ECF1" },  // Cyan
+            completed: { text: "#28A745", background: "#E9F7EF" },   // Green
+        };
+    
+        let { text, background } = statusColors[status] || { text: "#6C757D", background: "#E9ECEF" }; // Default to Gray
+    
+        return {
+            fontSize: 14,
+            fontWeight: "600",
+            color: text,
+            backgroundColor: background,
+            paddingVertical: 3,
+            paddingHorizontal: 10,
+            borderRadius: 15,
+            textAlign: "center",
+            minWidth: 90,
+        };
+    },
     leadContact: {
         fontSize: 16,
         fontWeight: "500",
