@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, FlatList, Button, Alert, ActivityIndicator, StyleSheet, RefreshControl } from "react-native";
 import { colors } from "../../constants/colors";
 import { _FETCH_LEADS, _ADD_LEAD } from "../../utility/models/leads"; // API calls
-import { _FETCH_GROUPS } from '../../utility/models/groups';
-import {TIME_AGO} from '../../utility/helpers/Carbon';
+import { _FETCH_GROUPS, _FETCH_GROUPS_BY_PHONE } from '../../utility/models/groups';
+import { TIME_AGO } from '../../utility/helpers/Carbon';
 import {
     Select,
     SelectTrigger,
@@ -36,7 +36,7 @@ const LeadsScreen = () => {
     const [total, setTotal] = useState(0);
     const [isFetching, setIsFetching] = useState(false);
     const [groupOptions, setGroupOptions] = useState([]);
-
+    const [groupByPhone, setGroupByPhone] = useState([]);
 
     useEffect(() => {
         fetchLeadsData(page);
@@ -66,6 +66,12 @@ const LeadsScreen = () => {
         };
         fetchGroups();
     }, []);
+
+    useEffect(() => {
+        if (contact.length === 10) {
+            fetchGroupByPhone(contact); // Fetch group data after 10 digits
+        }
+    }, [contact]);
 
     const fetchLeadsData = async (pageNumber) => {
         if (isFetching) return;
@@ -108,19 +114,38 @@ const LeadsScreen = () => {
         }
     };
 
+
+    const fetchGroupByPhone = async (phone) => {
+        //check phone length is ==10
+        if (contact.length > 10 && contact.length < 10) {
+            FIRE_TOAST(toast, "error", "solid", "Error", "10 Digit allowed");
+        }
+        try {
+            setLoading(true);
+            const response = await _FETCH_GROUPS_BY_PHONE(phone); // Use the `phone` parameter
+            console.log('responseresponseresponse', response);
+            setGroupByPhone(response.data);
+        } catch (error) {
+            FIRE_TOAST(toast, "error", "solid", "Error", error?.response?.data?.message || "Failed to fetch group.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     const addLead = async () => {
-        if (!contact || !description) {
+        if (!contact || !description || !groupName) {
             Alert.alert("Error", "Please fill all fields");
             return;
         }
-
         try {
             setLoading(true);
-            const newLead = { contact, description };
+            const newLead = { contact, description, group_id: groupName };
             const response = await _ADD_LEAD(newLead).then((response) => {
                 console.log("Added Lead:", response);
                 setContact("");
                 setDescription("");
+                setGroupName('')
                 fetchLeadsData(1);
                 FIRE_TOAST(toast, "success", "solid", "Success", response.message || "Lead added successfully.");
             }).catch((error) => {
@@ -137,17 +162,26 @@ const LeadsScreen = () => {
 
     const renderLeadItem = ({ item }) => (
         <View style={styles.leadCard}>
-            <Text style={styles.leadTitle}>Group: {item.group_name}</Text>
-            <Text style={styles.leadContact}>Contact: {item.contact}</Text>
-            <Text style={styles.leadDescription}>Description: {item.description}</Text>
-            <Text style={styles.leadDate}>{TIME_AGO(item.created_at)}</Text>
+            <View style={styles.leadHeader}>
+                <Text style={styles.leadTitle}>{item.group_name}</Text>
+                <Text style={styles.leadStatus(item.status)}>{item.status}</Text>
+            </View>
+            
+            <Text style={styles.leadContact}>📞 {item.contact}</Text>
+            <Text style={styles.leadDescription}>📝 {item.description}</Text>
+            
+            <View style={styles.leadFooter}>
+                <Text style={styles.leadDate}>{TIME_AGO(item.created_at)}</Text>
+            </View>
         </View>
     );
+
+    
     return (
         <View style={styles.container}>
             {/* Form */}
             <TextInput style={styles.input} placeholder="Enter Contact Number" value={contact} onChangeText={setContact} />
-            {/* <View style={{ marginBottom: 10 }}>
+            <View style={{ marginBottom: 10 }}>
                 <Select value={groupName} onValueChange={setGroupName} variant="solid" size="xl">
                     <SelectTrigger className='h-12 border-0' style={{ borderBottomWidth: 1, borderColor: colors.gray }}>
                         <SelectInput className='h-12 text-lg' placeholder="Select Group Name" />
@@ -161,13 +195,13 @@ const LeadsScreen = () => {
                             <SelectDragIndicatorWrapper>
                                 <SelectDragIndicator />
                             </SelectDragIndicatorWrapper>
-                            {groupOptions && groupOptions.map((group, index) => (
+                            {groupByPhone && groupByPhone.map((group, index) => (
                                 <SelectItem key={index} label={group.name} value={group.id} />
                             ))}
                         </SelectContent>
                     </SelectPortal>
                 </Select>
-            </View> */}
+            </View>
 
             <TextInput style={styles.input} placeholder="Description" value={description} onChangeText={setDescription} />
 
@@ -256,5 +290,60 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: colors.text,
         marginBottom: 10,
+    },
+
+    leadCard: {
+        backgroundColor: "#FFF",
+        padding: 10,
+        borderRadius: 10,
+        marginBottom: 15,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 1,
+    },
+    leadHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 5,
+    },
+    leadTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "#333",
+    },
+    leadStatus: (status) => ({
+        fontSize: 14,
+        fontWeight: "600",
+        color: status === "active" ? "#28A745" : "#DC3545",
+        backgroundColor: status === "active" ? "#E9F7EF" : "#F8D7DA",
+        paddingVertical: 3,
+        paddingHorizontal: 10,
+        borderRadius: 15,
+    }),
+    leadContact: {
+        fontSize: 16,
+        fontWeight: "500",
+        color: "#555",
+        marginVertical: 3,
+    },
+    leadDescription: {
+        fontSize: 14,
+        color: "#777",
+        marginBottom: 10,
+    },
+    leadFooter: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        borderTopWidth: 1,
+        borderTopColor: "#EEE",
+        paddingTop: 8,
+    },
+    leadDate: {
+        fontSize: 12,
+        color: "#999",
     },
 });

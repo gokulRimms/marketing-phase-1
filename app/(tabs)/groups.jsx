@@ -74,7 +74,7 @@ const GroupsScreen = () => {
     console.log('isAvailable', isAvailable);
     console.log('formattedNumbers', formattedNumbers);
 
-    if(formattedNumbers.length === 0) {
+    if (formattedNumbers.length === 0) {
       FIRE_TOAST(toast, "error", "solid", "Error!", "No contacts to send message.");
       return
     }
@@ -130,7 +130,7 @@ const GroupsScreen = () => {
 
   const renderGroupItem = ({ item }) => {
     // Extract employee names as a comma-separated list
-    const employeeNames = item.assigned_users.map((user) => user.name).join(", ");
+    const employeeNames = item.total_assigned_users > 1 ? `Me & ${item.total_assigned_users - 1} Others` : 'Me';
 
     return (
       <View style={styles.groupCard}>
@@ -146,22 +146,36 @@ const GroupsScreen = () => {
 
         <View style={styles.assignedUserInfo}>
           <Text style={styles.assignedUserNames}>{employeeNames}</Text>
+
+          {/* <View style={styles.imageGroup}>
+            {item.assigned_users.slice(0,3).map((user, index) => (
+              <Image
+                key={index}
+                source={{ uri: user.avatar }}  // Assuming profile picture is available in user object
+                style={[styles.profileImage, index > 0 && { marginLeft: -10 }]}  // Adjust margin for images next to each other
+              />
+            ))}
+            {item.assigned_users.length > 3 && (
+              <Text style={styles.moreUsers}>+{item.assigned_users.length - 3} More</Text>
+            )}
+          </View> */}
         </View>
+
 
         <View style={styles.historyContactsBox}>
           <View style={styles.historyBox}>
-            <Text style={styles.historyCount}>Total {item.total_histories} Sent</Text>
+            <Text style={styles.historyCount}>Total {item.total_sent_by_all} Sent</Text>
           </View>
           <View style={[styles.historyBox, { backgroundColor: colors.primary }]}>
-            <Text style={styles.totalContacts}>{item.total_contacts} / {item.contact_without_history} Contacts</Text>
+            <Text style={styles.totalContacts}>{item.total_sent_by_me} / {item.total_contacts} Sent by me</Text>
           </View>
         </View>
         <View style={styles.historyContactsBox}>
           <View style={[styles.historyBox, { backgroundColor: colors.primary }]}>
-            <Text style={styles.historyCount}>Sent {item.total_sent_todays} Today</Text>
+            <Text style={styles.historyCount}>Total {item.contact_without_history} Left</Text>
           </View>
           <View style={styles.contactsBox}>
-            <Text style={styles.totalContacts}>{item.balance} Quota Left</Text>
+            <Text style={styles.totalContacts}>{item.balance} Today Quota Left</Text>
           </View>
         </View>
 
@@ -171,18 +185,20 @@ const GroupsScreen = () => {
             style={[styles.sendButton, { backgroundColor: item.disabled ? colors.gray : colors.primary, }]}
             onPress={() => {
               setLoading(true);
+              
               if (item.disabled) {
                 FIRE_TOAST(toast, "error", "solid", "Notice!", "You've consumed all your messages for today.");
-                setLoading(false);
-                return
+                setLoading(false); // Reset loading state after toast
+                return; // Exit early since the condition is met
               }
 
-              if(item.contact_without_history > 0) {
-                sendMessage(item.id, item.balance, item.template_message)
+              if (item.contact_without_history > 0) {
+                sendMessage(item.id, item.balance, item.template_message);
+              } else {
+                FIRE_TOAST(toast, "warning", "solid", "Warning!", "All contacts have been sent.");
               }
-              FIRE_TOAST(toast, "warning", "solid", "Warning!", "All contacts have been sent.");
-              setLoading(false);
-              return
+
+              setLoading(false); // Reset loading state after the logic completes
             }}
           // disabled={true}
           >
@@ -275,13 +291,31 @@ const styles = StyleSheet.create({
     color: colors.secondary,
   },
   assignedUserInfo: {
-    marginTop: 10,
-    marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+
+  },
+
+  imageGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  profileImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: 'gray',
+  },
+  moreUsers: {
+    fontSize: 12,
+    color: 'gray',
+    marginLeft: 5,
   },
   assignedUserNames: {
     fontSize: 14,
     fontWeight: "bold",
-    color: colors.text,
+    color: colors.primary,
     marginBottom: 5,
   },
   historyContactsBox: {

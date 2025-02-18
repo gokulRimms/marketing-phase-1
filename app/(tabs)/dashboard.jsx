@@ -1,89 +1,73 @@
 import { View, Text, StyleSheet, ScrollView, RefreshControl } from "react-native";
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { colors, backgroundColors, textColors } from "@/constants/colors";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import Loader from "../../components/Loader";
-import {_FETCH_DASHBOARD} from '../../utility/models/dashboard'
+import { _FETCH_DASHBOARD } from '../../utility/models/dashboard';
+
 export default function DashboardScreen() {
-  const { auth } = useAuth(); // Get user object
+  const { auth } = useAuth();
   const { user } = auth || {};
 
   const [refreshing, setRefreshing] = useState(false);
-  const [dashboardData, setDashboardData] = useState([]);
-  // Function to fetch data on refresh
+  const [dashboardData, setDashboardData] = useState({});
 
-  
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    console.log("pulled over the screen 🔥");
+    console.log("Fetching dashboard data... 🔥");
     setRefreshing(true);
     try {
-      await _FETCH_DASHBOARD().then((response) => {
-        setDashboardData(response.data);
-      })
-      console.log("Fetched Data: 🔥",);
-      // Update your state here if necessary
+      const response = await _FETCH_DASHBOARD();
+      setDashboardData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
     setRefreshing(false);
   };
 
-
   return (
-    
-    <ScrollView contentContainerStyle={styles.container}
+    <ScrollView
+      contentContainerStyle={styles.container}
       showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={fetchData} colors={[colors.primary]} />
-      }
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={fetchData} colors={[colors.primary]} />}
     >
       {/* Welcome Section */}
       <View style={styles.header}>
         <Text style={styles.welcomeText}>Welcome Back,</Text>
-        <Text style={styles.username}>{user?.name}</Text>
-      </View>
-      {/* <View style={[styles.activityContainer, { marginBottom: 20}]}>
-        <ActivityItem icon="logo-capacitor" label="80" time="Total Capacity" />
-        <ActivityItem icon="chatbubble-ellipses-outline" label={dashboardData.todays_sent + " Messages"} time="Sent Today" />
-      </View> */}
-      
-      {/* Widget Section */}
-      <View style={styles.widgetContainer}>
-      <DashboardWidget icon="doubleright" label="Total Capacity" value="80" />
-      <DashboardWidget icon="wechat" label="Capacity Left" value={80-dashboardData.todays_sent} />
-
-        <DashboardWidget icon="team" label="Groups" value={dashboardData.groups} />
-        <DashboardWidget icon="contacts" label="Contacts" value={dashboardData.contacts} />
-        <DashboardWidget icon="message1" label="Total Sent" value={dashboardData.sent} />
-        <DashboardWidget icon="clockcircleo" label="Todays Sent" value={`${dashboardData.todays_sent}`} />
-        <DashboardWidget icon="book" label="Total Leads" value={`${dashboardData.total_leads}`} />
-        <DashboardWidget icon="save" label="Todays Leads" value={`${dashboardData.today_leads}`} />
-
+        <Text style={styles.username}>{user?.name || "User"}</Text>
       </View>
 
-      {/* Recent Activity Section */}
-      <View style={styles.activityContainer}>
-        {/* <Text style={styles.sectionTitle}>Recent Activity</Text> */}
-        {/* <ActivityItem icon="bag-check-outline" label={dashboardData.total_leads} time="Total Leads" />
-        <ActivityItem icon="bag-add-outline" label={dashboardData.today_leads} time="New Leads" /> */}
+       {/* Small Widgets */}
+       <View style={styles.widgetContainer}>
+        <DashboardWidget icon="doubleright" label="Total Capacity" value={ 80} />
+        <DashboardWidget icon="doubleright" label="Total Capacity Left" value={80- dashboardData.todays_sent} />
       </View>
+
+      {/* Full-width Dashboard Card */}
+      {dashboardData && dashboardData.groups && dashboardData.groups.map((group, index) => (
+        <View style={styles.fullWidthCard} key={index}>
+          <Text style={styles.cardTitle}>{group.name}</Text>
+          <View style={styles.cardRow}>
+            <CardItem label="Total Contacts" value={group.total_contacts} />
+            <CardItem label="Total Sent" value={group.total_sent_by_all} />
+          </View>
+          <View style={styles.cardRow}>
+            <CardItem label="Sent by Me" value={group.total_sent_by_me} />
+            <CardItem label="Total Left" value={group.contact_without_history} />
+          </View>
+          <View style={styles.cardRow}>
+            <CardItem label="Leads" value={group.leads} />
+            <CardItem label="Today’s Sent" value={group.total_sent_todays} />
+          </View>
+        </View>
+      ))}
     </ScrollView>
-   
   );
 }
-// Reusable Widget Component
-const DashboardWidget = ({ icon, label, value }) => (
-  <View style={styles.widget}>
-    <AntDesign name={icon} size={30} color={colors.primary} />
-    <Text style={styles.widgetLabel}>{label}</Text>
-    <Text style={styles.widgetValue}>{value}</Text>
-  </View>
-);
 
 // Reusable Activity Component
 const ActivityItem = ({ icon, label, time }) => (
@@ -96,13 +80,31 @@ const ActivityItem = ({ icon, label, time }) => (
   </View>
 );
 
+// Small Widget Component
+const DashboardWidget = ({ icon, label, value }) => (
+  <View style={styles.widget}>
+    <AntDesign name={icon} size={30} color={colors.white} />
+    <Text style={styles.widgetLabel}>{label}</Text>
+    <Text style={styles.widgetValue}>{value}</Text>
+  </View>
+);
+
+// Card Item Component (for full-width card)
+const CardItem = ({ label, value }) => (
+  <View style={styles.cardItem}>
+    <Text style={styles.cardLabel}>{label}</Text>
+    <Text style={styles.cardValue}>{value}</Text>
+  </View>
+);
+
+// Styles
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: backgroundColors.light, // Dark background
+    backgroundColor: backgroundColors.light,
     paddingVertical: 20,
     paddingHorizontal: 15,
-    paddingBottom: 100,  // Extra space for bottom tab
+    paddingBottom: 100,
   },
   header: {
     marginBottom: 20,
@@ -116,6 +118,49 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: colors.primary,
   },
+
+  // Full-width card styles
+  fullWidthCard: {
+    backgroundColor: colors.primary,
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+    marginBottom: 20,
+  },
+  cardTitle: {
+    color: "#FFF",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  cardRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  cardItem: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    borderRadius: 8,
+    marginHorizontal: 5,
+    alignItems: "center",
+  },
+  cardLabel: {
+    fontSize: 14,
+    color: "#FFF",
+    textAlign: "center",
+  },
+  cardValue: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#FFF",
+  },
+
+  // Widget Styles
   widgetContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -123,7 +168,7 @@ const styles = StyleSheet.create({
   },
   widget: {
     width: "48%",
-    backgroundColor: "#fff",
+    backgroundColor: colors.primary,
     padding: 20,
     borderRadius: 15,
     alignItems: "center",
@@ -134,23 +179,15 @@ const styles = StyleSheet.create({
   },
   widgetLabel: {
     fontSize: 14,
-    color: textColors.secondary,
+    fontWeight : 'bold',
+    color: colors.white,
     marginTop: 5,
   },
   widgetValue: {
     fontSize: 18,
     fontWeight: "bold",
-    color: colors.primary,
+    color: colors.white,
     marginTop: 5,
-  },
-  activityContainer: {
-    marginTop: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: colors.primary,
-    marginBottom: 10,
   },
   activityItem: {
     flexDirection: "row",
@@ -162,6 +199,9 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.1,
     elevation: 3,
+  },
+  activityContainer: {
+    marginTop: 20,
   },
   activityText: {
     marginLeft: 10,
@@ -176,3 +216,4 @@ const styles = StyleSheet.create({
     color: textColors.gray,
   },
 });
+

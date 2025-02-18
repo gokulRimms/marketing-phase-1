@@ -18,3 +18,12 @@ export const _FETCH_GROUP_CONTACTS = async (groupId, balance) => {
     throw error;
   }
 };
+
+export const _FETCH_GROUPS_BY_PHONE = async (phone) => {
+  try {
+    const response = await HIT_SERVER.get(`groupsByPhone/${phone}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}

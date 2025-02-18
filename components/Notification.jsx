@@ -48,7 +48,10 @@ const Notification = (props) => {
 
   return (
     <TouchableOpacity
-      onPress={() => router.push("/notifications")}
+      onPress={() => {
+        fetCount();
+        router.push("/notifications");
+      }}
       style={{
         marginRight: 10,
         borderColor: "white",
